@@ -374,9 +374,11 @@
             {
                 id: "freegem",
                 hda: {
-                    url: host + "freegem.bin",
+                    url: host + "freegem/.bin",
                     size: 209715200,
                     async: true,
+                    fixed_chunk_size: 256 * 1024,
+                    use_parts: true,
                 },
                 name: "Freedos with FreeGEM",
             },
@@ -499,6 +501,17 @@
                 homepage: "http://www.damnsmalllinux.org/",
             },
             {
+                id: "xwoaf",
+                memory_size: 256 * 1024 * 1024,
+                cdrom: {
+                    url: host + "xwoaf_rebuild4.iso",
+                    size: 2205696,
+                    async: false,
+                },
+                name: "xwoaf",
+                homepage: "https://pupngo.dk/xwinflpy/xwoaf_rebuild.html",
+            },
+            {
                 id: "minix",
                 name: "Minix",
                 memory_size: 256 * 1024 * 1024,
@@ -516,7 +529,7 @@
                 fda: {
                     url: ON_LOCALHOST ?
                             host + "kolibri.img" :
-                            "//builds.kolibrios.org/eng/data/data/kolibri.img",
+                            "//builds.kolibrios.org/en_US/data/data/kolibri.img",
                     size: 1474560,
                     async: false,
                 },
@@ -557,6 +570,16 @@
                 name: "OpenBSD",
             },
             {
+                id: "sortix",
+                cdrom: {
+                    url: host + "sortix-1.0-i686.iso",
+                    size: 71075840,
+                    async: false,
+                },
+                memory_size: 512 * 1024 * 1024,
+                name: "Sortix",
+            },
+            {
                 id: "openbsd-boot",
                 hda: {
                     url: host + "openbsd.img",
@@ -580,6 +603,23 @@
                 },
                 memory_size: 256 * 1024 * 1024,
                 name: "NetBSD",
+            },
+            {
+                id: "crazierl",
+                multiboot: {
+                    url: host + "crazierl-elf.img",
+                    size: 896592,
+                    async: false,
+                },
+                initrd: {
+                    url: host + "crazierl-initrd.img",
+                    size: 18448316,
+                    async: false,
+                },
+                acpi: true,
+                cmdline: "kernel /libexec/ld-elf32.so.1",
+                memory_size: 128 * 1024 * 1024,
+                name: "Crazierl",
             },
             {
                 id: "solos",
@@ -640,6 +680,25 @@
                 },
                 name: "Floppy Bird",
                 homepage: "http://mihail.co/floppybird",
+            },
+            {
+                id: "stillalive",
+                fda: {
+                    url: host + "stillalive-os.img",
+                    async: false,
+                    size: 368640,
+                },
+                name: "Still Alive",
+                homepage: "https://github.com/maniekx86/stillalive-os",
+            },
+            {
+                id: "hello-v86",
+                fda: {
+                    url: host + "hello-v86.img",
+                    async: false,
+                    size: 512,
+                },
+                name: "Hello v86",
             },
             {
                 id: "duskos",
@@ -777,6 +836,28 @@
                     size: 34463744,
                 },
                 name: "Windows 3.1",
+            },
+            {
+                id: "tilck",
+                memory_size: 128 * 1024 * 1024,
+                hda: {
+                    url: host + "tilck.img",
+                    async: false,
+                    size: 37748736,
+                },
+                name: "Tilck",
+                homepage: "https://github.com/vvaltchev/tilck",
+            },
+            {
+                id: "sanos",
+                memory_size: 128 * 1024 * 1024,
+                hda: {
+                    url: host + "sanos-flp.img",
+                    async: false,
+                    size: 1474560,
+                },
+                name: "sanos",
+                homepage: "http://www.jbox.dk/sanos/",
             },
             {
                 id: "freebsd",
@@ -1209,6 +1290,8 @@
             settings.memory_size = (!infos.state && settings.memory_size) ? settings.memory_size : infos.memory_size;
             settings.vga_memory_size = (!infos.state && settings.vga_memory_size) ? settings.vga_memory_size : infos.vga_memory_size;
 
+            settings.disable_vga_display = infos.disable_vga_display;
+
             settings.id = infos.id;
 
             if(infos.boot_order !== undefined)
@@ -1438,7 +1521,7 @@
             memory_size: memory_size,
             vga_memory_size: vga_memory_size,
 
-            screen_container: $("screen_container"),
+            screen_container: settings.disable_vga_display ? null : $("screen_container"),
 
             boot_order: settings.boot_order || parseInt($("boot_order").value, 16) || 0,
 
@@ -1536,7 +1619,7 @@
         $("loading").style.display = "none";
         $("runtime_options").style.display = "block";
         $("runtime_infos").style.display = "block";
-        $("screen_container").style.display = "block";
+        if(!settings.disable_vga_display) $("screen_container").style.display = "block";
 
         if(settings.filesystem)
         {
